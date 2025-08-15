@@ -1,0 +1,17 @@
+{
+    "name": "wabot",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "dependencies": {
+        "baileys": "^6.7.18",
+        "qrcode-terminal": "^0.12.0"
+    }
+}
