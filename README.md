@@ -34,7 +34,7 @@ Install Termux (Android)
 ```bash
 pkg update -y && upgrade -y
 pkg install nodejs git -y
-git clone https://github.com/razifcode/wabase
+git clone https://github.com/RazifCode/wabase
 cd wabase
 npm install
 node index.js
