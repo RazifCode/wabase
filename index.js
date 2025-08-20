@@ -1,72 +1,45 @@
-(async () => {
-    const {
-        default: makeWaSocket,
-        useMultiFileAuthState,
-        DisconnectReason
-    } = require("baileys");
+const { spawn } = require("child_process");
+const chalk = require("chalk");
 
-    const question = text => {
-        let rl = require("readline").createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-        return new Promise(resolve => {
-            rl.question(text, resolve);
-        });
-    };
+console.clear();
 
-    const { state, saveCreds } = await useMultiFileAuthState("auth");
+require("cfonts").say("WaBase", {
+    font: "block",
+    align: "center",
+    colors: ["cyan", "blue"],
+    background: "transparent",
+    letterSpacing: 1,
+    lineHeight: 1,
+    maxLenght: "0"
+});
 
-    const connectionOptions = {
-        logger: require("pino")({ level: "silent" }),
-        auth: state
-    };
+console.log(chalk.green("Welcome To Bot Wa"));
 
-    global.conn = makeWaSocket(connectionOptions);
+let isRunning = false;
+function start(file) {
+    if (isRunning) return;
+    isRunning = true;
+    const args = [file, ...process.argv.slice(2)];
+    const p = spawn(process.argv[0], args, {
+        stdio: ["inherit", "inherit", "inherit", "ipc"]
+    });
 
-    async function connectionUpdate(update) {
-        const { connection, lastDisconnect, qr } = update;
-
-        if (qr) {
-            // require("qrcode-terminal").generate(qr, { small: true });
-            let waNumber = await question("Start with Your Number: ");
-            let code = await conn.requestPairingCode(waNumber);
-            console.log("your pairing code: " + code)
+    p.on("message", data => {
+        console.log(chalk.yellow("message: " + data));
+        if (data == "restart") {
+            p.kill();
+            isRunning = false;
+            start(file);
         }
+    });
 
-        if (connection == "open") {
-            console.log("connected: " + conn.user.id);
-        }
-        if (connection == "close") {
-            console.log("restart bot");
-        }
+    p.on("exit", code => {
+        isRunning = false;
+        console.log(chalk.red(`Exited with code: ${code}`));
+        if (code) start(file);
+    });
 
-        if (
-            lastDisconnect &&
-            lastDisconnect.error &&
-            lastDisconnect.error.output &&
-            lastDisconnect.error.output.statusCode !==
-                DisconnectReason.loggefOut
-        ) {
-            console.log(reload(true));
-        }
-    }
+    p.on("error", console.log);
+}
 
-    reload = function (restartConn) {
-        if (restartConn) {
-            try {
-                conn.ws.close();
-            } catch {}
-            conn = { ...conn, ...makeWaSocket(connectionOptions) };
-        }
-
-        conn.connectionUpdate = connectionUpdate.bind(conn);
-        conn.saveCreds = saveCreds.bind(conn);
-
-        conn.ev.on("creds.update", conn.saveCreds);
-        conn.ev.on("connection.update", conn.connectionUpdate);
-        return true;
-    };
-    reload();
-})();
-                
+start("./main.js");
