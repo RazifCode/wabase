@@ -1,9 +1,9 @@
 const { spawn } = require("child_process");
 const chalk = require("chalk");
-
+/*
 console.clear();
 
-/*
+
 require("cfonts").say("WaBase", {
     font: "block",
     align: "center",
