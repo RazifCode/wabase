@@ -3,6 +3,7 @@ const chalk = require("chalk");
 
 console.clear();
 
+/*
 require("cfonts").say("WaBase", {
     font: "block",
     align: "center",
@@ -12,7 +13,8 @@ require("cfonts").say("WaBase", {
     lineHeight: 1,
     maxLenght: "0"
 });
-
+padam aja /**/ kalau mau guna cfonts
+*/
 console.log(chalk.green("Welcome To Bot Wa"));
 
 let isRunning = false;
