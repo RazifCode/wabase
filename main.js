@@ -49,9 +49,7 @@
                     {
                         tpye: "input",
                         name: "waNumber",
-                        message: chalk.blue(
-                            "Masukkan nombor whatsapp anda:"
-                        ),
+                        message: chalk.blue("Masukkan nombor whatsapp anda:"),
                         validate: input => {
                             if (!/^\d+$/.test(input)) {
                                 return "Masukkan nombot sahaja";
@@ -91,6 +89,7 @@
         }
     }
 
+    const handler = require("./handler.js");
     reload = function (restartConn) {
         if (restartConn) {
             try {
@@ -101,9 +100,16 @@
 
         conn.connectionUpdate = connectionUpdate.bind(conn);
         conn.saveCreds = saveCreds.bind(conn);
+        conn.handler = handler.handler.bind(conn);
+        conn.antiCall = handler.antiCall.bind(conn);
+        
 
         conn.ev.on("creds.update", conn.saveCreds);
         conn.ev.on("connection.update", conn.connectionUpdate);
+        conn.ev.on("messages.upsert", conn.handler);
+        conn.ev.on("call", conn.antiCall);
+        
+
         return true;
     };
     reload();
