@@ -5,6 +5,8 @@
         DisconnectReason
     } = require("baileys");
     const chalk = require("chalk");
+    const fs = require("fs");
+
     const question = text => {
         let rl = require("readline").createInterface({
             input: process.stdin,
@@ -15,6 +17,36 @@
         });
     };
 
+    opts = new Object(
+        require("yargs")(process.argv.slice(2)).exitProcess(false).parse()
+    );
+
+    db = JSON.parse(fs.readFileSync("./database.json"));
+
+    loadDatabase = async function loadDatabase() {
+        if (db.READ)
+            return new Promise(resolve => {
+                setInterval(function () {
+                    !db.READ
+                        ? (clearInterval(conn),
+                          resolve(db.data == null ? loadDatabase() : db.data))
+                        : null;
+                }, 1 * 1000);
+            });
+        if (db.data !== null) return;
+        db.READ = true;
+        await db.read();
+        db.READ = false;
+        db.data = {
+            users: {},
+            chats: {},
+            settings: {},
+            ...(db.data || {})
+        };
+        db.chain = require("lodash").chain(db.data);
+    };
+    loadDatabase();
+
     const { state, saveCreds } = await useMultiFileAuthState("auth");
 
     const connectionOptions = {
@@ -22,7 +54,7 @@
         auth: state
     };
 
-    global.conn = makeWaSocket(connectionOptions);
+    global.conn = require("./lib/simple.js").makeWASocket(connectionOptions);
 
     async function connectionUpdate(update) {
         const { connection, lastDisconnect, qr } = update;
@@ -87,6 +119,8 @@
             console.log(chalk.red("Reloading Bot..."));
             console.log(reload(true));
         }
+
+        if (db.data == null) await loadDatabase();
     }
 
     const handler = require("./handler.js");
@@ -102,13 +136,11 @@
         conn.saveCreds = saveCreds.bind(conn);
         conn.handler = handler.handler.bind(conn);
         conn.antiCall = handler.antiCall.bind(conn);
-        
 
         conn.ev.on("creds.update", conn.saveCreds);
         conn.ev.on("connection.update", conn.connectionUpdate);
         conn.ev.on("messages.upsert", conn.handler);
         conn.ev.on("call", conn.antiCall);
-        
 
         return true;
     };
