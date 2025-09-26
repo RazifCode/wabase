@@ -57,7 +57,7 @@ Jika mau lihat proses membuat bot whatsapp, boleh lihat di channel youtube ini:
 
 ---
 
-Group untuk mesra bercakapan + tutorial ( jika minat, aku tidak sepuh tentang coding )
+Jika anda mengalami error script ini sila lapor di issues atau join grup whatsapp.
 [Group WhatsApp](https://chat.whatsapp.com/LVuLZ7DO3Mf81rXnGCnvEF?mode=r_t)
 
 Supported Thanks to
