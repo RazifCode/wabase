@@ -6,6 +6,7 @@
     } = require("baileys");
     const chalk = require("chalk");
     const fs = require("fs");
+    const { Low, JSONFile } = require("lowdb");
 
     const question = text => {
         let rl = require("readline").createInterface({
@@ -21,7 +22,8 @@
         require("yargs")(process.argv.slice(2)).exitProcess(false).parse()
     );
 
-    db = JSON.parse(fs.readFileSync("./database.json"));
+    //db = JSON.parse(fs.readFileSync("./database.json"));
+    db = new Low(new JSONFile("database.json"));
 
     loadDatabase = async function loadDatabase() {
         if (db.READ)
@@ -49,6 +51,11 @@
 
     const { state, saveCreds } = await useMultiFileAuthState("auth");
 
+    if (db) {
+        // setInterval(async () => {
+        if (db.data) await db.write();
+        // }, 30 * 1000);
+    }
     const connectionOptions = {
         logger: require("pino")({ level: "silent" }),
         auth: state
@@ -60,43 +67,53 @@
         const { connection, lastDisconnect, qr } = update;
 
         if (qr) {
-            const { request } = await require("inquirer").prompt([
-                {
-                    type: "list",
-                    name: "request",
-                    message: "Ingin menggunakan login method?",
-                    choices: [
-                        { name: "QrCode", value: "qr" },
-                        { name: "PairingCode", value: "pairing" }
-                    ]
-                }
-            ]);
-
-            if (request == "qr") {
-                console.log(chalk.cyan("\nScan QR dibawah"));
-                require("qrcode-terminal").generate(qr, { small: true });
-            }
-            if (request == "pairing") {
-                const { waNumber } = await require("inquirer").prompt([
+            try {
+                const { request } = await require("inquirer").prompt([
                     {
-                        tpye: "input",
-                        name: "waNumber",
-                        message: chalk.blue("Masukkan nombor whatsapp anda:"),
-                        validate: input => {
-                            if (!/^\d+$/.test(input)) {
-                                return "Masukkan nombot sahaja";
-                            }
-                            if (input.length < 8) {
-                                return "Nombor terlalu pendek";
-                            }
-                            return true;
-                        }
+                        type: "list",
+                        name: "request",
+                        message: "Ingin menggunakan login method?",
+                        choices: [
+                            { name: "QrCode", value: "qr" },
+                            { name: "PairingCode", value: "pairing" }
+                        ]
                     }
                 ]);
-                const code = await conn.requestPairingCode(waNumber);
+
+                if (request == "qr") {
+                    console.log(chalk.cyan("\nScan QR dibawah"));
+                    require("qrcode-terminal").generate(qr, { small: true });
+                }
+                if (request == "pairing") {
+                    const { waNumber } = await require("inquirer").prompt([
+                        {
+                            tpye: "input",
+                            name: "waNumber",
+                            message: chalk.blue(
+                                "Masukkan nombor whatsapp anda:"
+                            ),
+                            validate: input => {
+                                if (!/^\d+$/.test(input)) {
+                                    return "Masukkan nombot sahaja";
+                                }
+                                if (input.length < 8) {
+                                    return "Nombor terlalu pendek";
+                                }
+                                return true;
+                            }
+                        }
+                    ]);
+                    const code = await conn.requestPairingCode(waNumber);
+                    console.log(
+                        chalk.green("Your Pairing Code: " + chalk.bold(code))
+                    );
+                }
+            } catch (err) {
+                console.error("error use qr in connection: " + err + "\n\n");
                 console.log(
-                    chalk.green("Your Pairing Code: " + chalk.bold(code))
+                    chalk.green("use a simple source qrCode\nHere this: \n\n")
                 );
+                await require("qrcode-terminal").generate(qr, { small: true });
             }
         }
 
