@@ -12,7 +12,7 @@
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#table-of-contents)
 
 ### WARNING!!
-
+- TUTORIALS ON YOUTUBE WILL BE TEMPORARILY POSTPONED 
 - THE BAILEYS UPDATE IS IN THE PROCESS OF IMPROVEMENT AND FIXING. CURRENTLY BAILEYS UPDATE HAS SOME ERRORS. IF THERE IS A MISTAKE OR ERROR IN THIS SCRIPT, PLEASE DELETE GROUPMETADATA!
 
 ### 📌 Pengenalan
