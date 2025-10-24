@@ -11,6 +11,10 @@
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#table-of-contents)
 
+### WARNING!!
+
+- THE BAILEYS UPDATE IS IN THE PROCESS OF IMPROVEMENT AND FIXING. CURRENTLY BAILEYS UPDATE HAS SOME ERRORS. IF THERE IS A MISTAKE OR ERROR IN THIS SCRIPT, PLEASE DELETE GROUPMETADATA!
+
 ### 📌 Pengenalan
 
 ialah bot WhatsApp asas yang dibina menggunakan **Node.js** dan pustaka package npm **[Baileys](https://github.com/WhiskeySockets/Baileys)**.
