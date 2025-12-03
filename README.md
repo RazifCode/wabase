@@ -11,16 +11,16 @@
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#table-of-contents)
 
-### WARNING!!
-- TUTORIALS ON YOUTUBE WILL BE TEMPORARILY POSTPONED 
-- THE BAILEYS UPDATE IS IN THE PROCESS OF IMPROVEMENT AND FIXING. CURRENTLY BAILEYS UPDATE HAS SOME ERRORS. IF THERE IS A MISTAKE OR ERROR IN THIS SCRIPT, PLEASE DELETE GROUPMETADATA!
+### Note!!
+- script telah diperbaiki dan menambahkan plugins
+- ia tidak akan upload video tutorial yg ke 6 dan 7 disebabkan error upload
+- jika ada masalah error atau banyak kekurangan, anda boleh lapor di issue atau join grup whatsapp untuk mempertanyakan soalan² lain
 
 ### 📌 Pengenalan
 
 ialah bot WhatsApp asas yang dibina menggunakan **Node.js** dan pustaka package npm **[Baileys](https://github.com/WhiskeySockets/Baileys)**.
 
 Rujukan tambahan:
-
 -   [Baileys Wiki](https://baileys.wiki)
 -   [Baileys NPM](https://www.npmjs.com/package/@whiskeysockets/baileys)
 -   [Baileys NPM 2](https://www.npmjs.com/package/baileys)
@@ -45,7 +45,7 @@ node index.js
 ```
 
 note:
-jika gagal install baileys menggunakan **NPM** sila install **yarn**
+jika gagal install baileys menggunakan **NPM** sila guna **yarn**
 
 ```bash
 pkg install yarn -y
@@ -61,9 +61,9 @@ Jika mau lihat proses membuat bot whatsapp, boleh lihat di channel youtube ini:
 
 ---
 
-Jika anda mengalami error script ini sila lapor di issues atau join grup whatsapp.
+join grup whatsapp.
 [Group WhatsApp](https://chat.whatsapp.com/LVuLZ7DO3Mf81rXnGCnvEF?mode=r_t)
 
 Supported Thanks to
 : iky
-
+: Mixuu
