@@ -43,6 +43,7 @@
             users: {},
             chats: {},
             settings: {},
+            stats:{},
             ...(db.data || {})
         };
         db.chain = require("lodash").chain(db.data);
