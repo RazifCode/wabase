@@ -1,4 +1,11 @@
 global.owner = [
-    ["601115451006", "Razz", true], // nombor
-    ["111184288182522", "Razz", true] // lid
+    ["", "Razz", true], // nombor
+    ["", "Razz", true] // lid
 ];
+
+// anda boleh tambah global yg lain
+
+global.namebot = "";
+global.nameown = "";
+global.numberown = "";
+global.numberbot = "";

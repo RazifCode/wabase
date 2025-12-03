@@ -7,22 +7,24 @@
     const chalk = require("chalk");
     const fs = require("fs");
     const { Low, JSONFile } = require("lowdb");
+    const path = require("path");
+    const syntaxerror = require("syntax-error");
+    const yargs = require("yargs");
 
-    const question = text => {
-        let rl = require("readline").createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-        return new Promise(resolve => {
-            rl.question(text, resolve);
-        });
+    timestamp = {
+        start: new Date()
     };
 
-    opts = new Object(
-        require("yargs")(process.argv.slice(2)).exitProcess(false).parse()
+    opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse());
+    prefix = new RegExp(
+        "^[" +
+            (
+                opts.prefix ||
+                "â€ŽxzXZ/!#$%+Â£Â¢â‚¬Â¥^Â°=Â¶âˆ†Ã—Ã·Ï€âˆšâœ“Â©Â�?:;?&.\\-"
+            ).replace(/[|\\{}()[\]^$+*?.\-\^]/g, "\\$&") +
+            "]"
     );
 
-    //db = JSON.parse(fs.readFileSync("./database.json"));
     db = new Low(new JSONFile("database.json"));
 
     loadDatabase = async function loadDatabase() {
@@ -43,7 +45,7 @@
             users: {},
             chats: {},
             settings: {},
-            stats:{},
+            stats: {},
             ...(db.data || {})
         };
         db.chain = require("lodash").chain(db.data);
@@ -120,11 +122,14 @@
 
         if (connection == "open") {
             console.log(
-                chalk.greenBright("Connected as: " + chalk.yellow(conn.user.id))
+                chalk.greenBright(
+                    "Connected as: " + chalk.yellow(conn.user.id)
+                )
             );
         }
         if (connection == "close") {
-            console.log(chalk.red("Connection Closed, restarting Bor..."));
+            console.log(chalk.red("Connection Closed, restarting Bot..."));
+            global.timestamp.connect = new Date();
         }
 
         if (
@@ -135,14 +140,14 @@
                 DisconnectReason.loggefOut
         ) {
             console.log(chalk.red("Reloading Bot..."));
-            console.log(reload(true));
+            console.log(reloadHandler(true));
         }
 
         if (db.data == null) await loadDatabase();
     }
 
     const handler = require("./handler.js");
-    reload = function (restartConn) {
+    reloadHandler = function (restartConn) {
         if (restartConn) {
             try {
                 conn.ws.close();
@@ -162,5 +167,52 @@
 
         return true;
     };
-    reload();
+
+    let pluginFolder = path.join(__dirname, "plugins");
+    let pluginFilter = filename => /\.js$/.test(filename);
+    plugins = {};
+    for (let filename of fs.readdirSync(pluginFolder).filter(pluginFilter)) {
+        try {
+            plugins[filename] = require(path.join(pluginFolder, filename));
+        } catch (e) {
+            delete plugins[filename];
+        }
+    }
+
+    console.log(Object.keys(plugins));
+    reload = (_ev, filename) => {
+        if (pluginFilter(filename)) {
+            let dir = path.join(pluginFolder, filename);
+            if (dir in require.cache) {
+                delete require.cache[dir];
+                if (fs.existsSync(dir))
+                    conn.logger.info(`re - require plugin '${filename}'`);
+                else {
+                    conn.logger.warn(`deleted plugin '${filename}'`);
+                    return delete plugins[filename];
+                }
+            } else conn.logger.info(`requiring new plugin '${filename}'`);
+            let err = syntaxerror(fs.readFileSync(dir), filename);
+            if (err)
+                conn.logger.error(
+                    `syntax error while loading '${filename}'\n${err}`
+                );
+            else
+                try {
+                    plugins[filename] = require(dir);
+                } catch (e) {
+                    conn.logger.error(
+                        `error require plugin '${filename}\n${e}'`
+                    );
+                } finally {
+                    plugins = Object.fromEntries(
+                        Object.entries(plugins).sort(([a], [b]) =>
+                            a.localeCompare(b)
+                        )
+                    );
+                }
+        }
+    };
+    fs.watch(path.join(__dirname, "plugins"), reload);
+    reloadHandler();
 })();
